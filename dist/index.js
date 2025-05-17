@@ -1,7 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = hello;
-function hello() {
-    return "Hello, world!";
-}
+exports.getStackProps = void 0;
+const fs_1 = require("fs");
+const path_1 = require("path");
+const getStackProps = (pathOfEnvFile, envSchema) => {
+    // Load the file from the env folder
+    try {
+        const envFile = (0, fs_1.readFileSync)(Array.isArray(pathOfEnvFile)
+            ? (0, path_1.join)(...pathOfEnvFile)
+            : (0, path_1.join)(pathOfEnvFile));
+        // Parse the file into the envSchema
+        const env = envSchema.parse(envFile.toJSON());
+        // Return the env object
+        return {
+            ...env,
+        };
+    }
+    catch (err) {
+        process.env.DEBUG && console.error('Error loading env file:', err);
+        throw err;
+    }
+};
+exports.getStackProps = getStackProps;
 //# sourceMappingURL=index.js.map
