@@ -29,16 +29,16 @@ const envSchema = z.object({
   name: z.string(),
   region: z.string(),
   stage: z.enum(['dev', 'staging', 'prod']),
-  instanceCount: z.number().int().positive()
+  instanceCount: z.number().int().positive(),
 });
 
 // Load and validate your environment configuration
 const stackProps = getStackProps('path/to/env/file.json', envSchema);
 
 // TypeScript knows the exact shape of stackProps
-console.log(stackProps.name);      // string
-console.log(stackProps.region);    // string
-console.log(stackProps.stage);     // 'dev' | 'staging' | 'prod'
+console.log(stackProps.name); // string
+console.log(stackProps.region); // string
+console.log(stackProps.stage); // 'dev' | 'staging' | 'prod'
 console.log(stackProps.instanceCount); // number
 
 // Use in your CDK stack
@@ -56,6 +56,7 @@ const stackProps = getStackProps(['path', 'to', 'env', 'file.json'], envSchema);
 ### Error Handling
 
 The library will throw an error if:
+
 - The environment file cannot be found or read
 - The file content doesn't match the provided schema
 

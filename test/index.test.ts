@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { getStackProps } from "../src";
+import { z } from 'zod';
+import { getStackProps } from '../src';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -33,7 +33,7 @@ describe('getStackProps', () => {
     // Define test data
     const testData = { name: 'test-stack', region: 'us-west-2' };
     const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(testData)
+      toJSON: jest.fn().mockReturnValue(testData),
     };
 
     // Mock readFileSync to return our test data
@@ -43,7 +43,7 @@ describe('getStackProps', () => {
     // Define schema
     const schema = z.object({
       name: z.string(),
-      region: z.string()
+      region: z.string(),
     });
 
     // Call the function
@@ -67,7 +67,7 @@ describe('getStackProps', () => {
     // Define schema
     const schema = z.object({
       name: z.string(),
-      region: z.string()
+      region: z.string(),
     });
 
     // Call the function and expect it to throw
@@ -86,7 +86,7 @@ describe('getStackProps', () => {
     // Define invalid test data (missing required field)
     const invalidData = { name: 'test-stack' }; // missing 'region'
     const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(invalidData)
+      toJSON: jest.fn().mockReturnValue(invalidData),
     };
 
     // Mock readFileSync to return our invalid data
@@ -96,7 +96,7 @@ describe('getStackProps', () => {
     // Define schema with required fields
     const schema = z.object({
       name: z.string(),
-      region: z.string() // This will cause validation to fail
+      region: z.string(), // This will cause validation to fail
     });
 
     // Call the function and expect it to throw
@@ -114,7 +114,7 @@ describe('getStackProps', () => {
     // Define test data
     const testData = { name: 'test-stack' };
     const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(testData)
+      toJSON: jest.fn().mockReturnValue(testData),
     };
 
     // Mock readFileSync and join
@@ -123,7 +123,7 @@ describe('getStackProps', () => {
 
     // Define schema
     const schema = z.object({
-      name: z.string()
+      name: z.string(),
     });
 
     // Call the function with string path
@@ -137,7 +137,7 @@ describe('getStackProps', () => {
     // Define test data
     const testData = { name: 'test-stack' };
     const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(testData)
+      toJSON: jest.fn().mockReturnValue(testData),
     };
 
     // Mock readFileSync and join
@@ -146,7 +146,7 @@ describe('getStackProps', () => {
 
     // Define schema
     const schema = z.object({
-      name: z.string()
+      name: z.string(),
     });
 
     // Call the function with array path
@@ -169,7 +169,7 @@ describe('getStackProps', () => {
 
     // Define schema
     const schema = z.object({
-      name: z.string()
+      name: z.string(),
     });
 
     // Call the function and expect it to throw
@@ -178,7 +178,10 @@ describe('getStackProps', () => {
     }).toThrow(fileError);
 
     // Verify console.error was called
-    expect(console.error).toHaveBeenCalledWith('Error loading env file:', fileError);
+    expect(console.error).toHaveBeenCalledWith(
+      'Error loading env file:',
+      fileError,
+    );
   });
 
   it('should not log errors when DEBUG is not set', () => {
@@ -193,7 +196,7 @@ describe('getStackProps', () => {
 
     // Define schema
     const schema = z.object({
-      name: z.string()
+      name: z.string(),
     });
 
     // Call the function and expect it to throw
