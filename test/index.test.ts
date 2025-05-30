@@ -207,4 +207,42 @@ describe('getStackProps', () => {
     // Verify console.error was not called
     expect(console.error).not.toHaveBeenCalled();
   });
+
+  // Test handling of nested object in schema
+  it('should correctly parse nested objects in the schema', () => {
+    // Define test data with nested object
+    const testData = {
+      name: 'test-stack',
+      config: {
+        timeout: 300,
+        retries: 3
+      }
+    };
+    const mockBuffer = {
+      toJSON: jest.fn().mockReturnValue(testData),
+    };
+
+    // Mock readFileSync to return our test data
+    (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+    (join as jest.Mock).mockImplementation((...args) => args.join('/'));
+
+    // Define schema with nested object
+    const schema = z.object({
+      name: z.string(),
+      config: z.object({
+        timeout: z.number(),
+        retries: z.number()
+      })
+    });
+
+    // Call the function
+    const result = getStackProps('path/to/env/file', schema);
+
+    // Assertions
+    expect(readFileSync).toHaveBeenCalledWith('path/to/env/file');
+    expect(mockBuffer.toJSON).toHaveBeenCalled();
+    expect(result).toEqual(testData);
+    expect(result.config.timeout).toBe(300);
+    expect(result.config.retries).toBe(3);
+  });
 });
