@@ -2,6 +2,7 @@
   "name": "type-safe-cdk-env",
   "version": "1.0.1",
   "main": "dist/index.js",
+  "repository": "github:iamflowz/type-safe-cdk-env",
   "scripts": {
     "test": "jest",
     "test-coverage": "jest --coverage",

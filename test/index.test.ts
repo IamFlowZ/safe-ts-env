@@ -215,8 +215,8 @@ describe('getStackProps', () => {
       name: 'test-stack',
       config: {
         timeout: 300,
-        retries: 3
-      }
+        retries: 3,
+      },
     };
     const mockBuffer = {
       toJSON: jest.fn().mockReturnValue(testData),
@@ -231,8 +231,8 @@ describe('getStackProps', () => {
       name: z.string(),
       config: z.object({
         timeout: z.number(),
-        retries: z.number()
-      })
+        retries: z.number(),
+      }),
     });
 
     // Call the function
