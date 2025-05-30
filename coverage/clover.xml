@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1748625325783" clover="3.2.0">
+  <project timestamp="1748625325783" name="All files">
+    <metrics statements="9" coveredstatements="9" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1" elements="14" coveredelements="14" complexity="0" loc="9" ncloc="9" packages="1" files="1" classes="1"/>
+    <file name="index.ts" path="/Users/dakotalewallen/Projects/github/type-safe-cdk-env/src/index.ts">
+      <metrics statements="9" coveredstatements="9" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="10" count="8" type="stmt"/>
+      <line num="11" count="8" type="stmt"/>
+      <line num="17" count="5" type="stmt"/>
+      <line num="19" count="4" type="stmt"/>
+      <line num="23" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="24" count="4" type="stmt"/>
+    </file>
+  </project>
+</coverage>
