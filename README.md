@@ -1,11 +1,11 @@
-# type-safe-env
+# safe-ts-env
 
 A TypeScript library that provides type-safe environment configuration.
 
 ## Installation
 
 ```bash
-npm install type-safe-env
+npm install safe-ts-env
 ```
 
 ## Features
@@ -21,7 +21,7 @@ npm install type-safe-env
 ### Basic Example
 
 ```typescript
-import { getEnv } from 'type-safe-env';
+import { getEnv } from 'safe-ts-env';
 import { z } from 'zod';
 
 // Define your environment schema using Zod

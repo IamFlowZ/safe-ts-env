@@ -1,8 +1,11 @@
 {
-  "name": "type-safe-env",
+  "name": "safe-ts-env",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "repository": "github:iamflowz/type-safe-env",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamflowz/safe-ts-env.git"
+  },
   "scripts": {
     "test": "jest",
     "test-coverage": "jest --coverage",
