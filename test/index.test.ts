@@ -256,7 +256,7 @@ describe('getEnv', () => {
       name: 'test-stack',
       region: 'us-west-2',
       stage: 'dev',
-      instanceCount: 3
+      instanceCount: 3,
     };
     const mockBuffer = {
       toJSON: jest.fn().mockReturnValue(testData),
@@ -281,8 +281,8 @@ describe('getEnv', () => {
     process.env = {
       ...process.env,
       ...Object.fromEntries(
-        Object.entries(checkedEnv).map(([key, value]) => [key, String(value)])
-      )
+        Object.entries(checkedEnv).map(([key, value]) => [key, String(value)]),
+      ),
     };
 
     // Verify that the values are accessible on process.env

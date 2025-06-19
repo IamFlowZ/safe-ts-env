@@ -1,14 +1,14 @@
 {
-  "name": "type-safe-cdk-env",
-  "version": "1.0.1",
+  "name": "type-safe-env",
+  "version": "0.0.0",
   "main": "dist/index.js",
-  "repository": "github:iamflowz/type-safe-cdk-env",
+  "repository": "github:iamflowz/type-safe-env",
   "scripts": {
     "test": "jest",
     "test-coverage": "jest --coverage",
     "build": "tsc",
     "format": "prettier --write .",
-    "check-exports": "attw --pack . --profile esm-only --format json",
+    "check-exports": "attw --pack . --profile esm-only ",
     "check-format": "prettier --check .",
     "ci": "npm run build && npm run check-format && npm run check-exports",
     "prepublishOnly": "npm run ci",

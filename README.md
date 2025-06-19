@@ -51,21 +51,21 @@ const checkedEnv = getEnv(['path', 'to', 'env', 'file.json'], envSchema);
 ```
 
 ### Using with `process.env`
-```typescript
 
+```typescript
 const checkedEnv = getEnv('path/to/env/file.json', envSchema);
 
 process.env = {
   ...process.env,
   ...Object.fromEntries(
-    Object.entries(checkedEnv).map(([key, value]) => [key, String(value)])
-  )
-}
+    Object.entries(checkedEnv).map(([key, value]) => [key, String(value)]),
+  ),
+};
 ```
 
 ### Using with CDK
-```typescript
 
+```typescript
 // Define your environment schema using Zod
 const envSchema = z.object({
   name: z.string(),
@@ -78,9 +78,9 @@ const checkedEnv = getEnv('path/to/env/file.json', envSchema);
 const stackProps = {
   ...process.env,
   ...Object.fromEntries(
-    Object.entries(checkedEnv).map(([key, value]) => [key, String(value)])
-  )
-}
+    Object.entries(checkedEnv).map(([key, value]) => [key, String(value)]),
+  ),
+};
 
 // Use in your CDK stack
 new MyStack(app, 'MyStack', stackProps);
