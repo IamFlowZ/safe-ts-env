@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { z } from 'zod';
 import { join } from 'path';
 
-export const getStackProps = <T extends z.ZodObject<any>>(
+export const getEnv = <T extends z.ZodObject<any>>(
   pathOfEnvFile: string | Array<string>,
   envSchema: T,
 ): z.infer<T> => {

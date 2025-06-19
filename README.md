@@ -1,11 +1,11 @@
-# type-safe-cdk-env
+# type-safe-env
 
-A TypeScript library that provides type-safe environment configuration for AWS CDK stacks using Zod for schema validation.
+A TypeScript library that provides type-safe environment configuration.
 
 ## Installation
 
 ```bash
-npm install type-safe-cdk-env
+npm install type-safe-env
 ```
 
 ## Features
@@ -21,7 +21,7 @@ npm install type-safe-cdk-env
 ### Basic Example
 
 ```typescript
-import { getStackProps } from 'type-safe-cdk-env';
+import { getEnv } from 'type-safe-env';
 import { z } from 'zod';
 
 // Define your environment schema using Zod
@@ -33,16 +33,13 @@ const envSchema = z.object({
 });
 
 // Load and validate your environment configuration
-const stackProps = getStackProps('path/to/env/file.json', envSchema);
+const checkedEnv = getEnv('path/to/env/file.json', envSchema);
 
-// TypeScript knows the exact shape of stackProps
-console.log(stackProps.name); // string
-console.log(stackProps.region); // string
-console.log(stackProps.stage); // 'dev' | 'staging' | 'prod'
-console.log(stackProps.instanceCount); // number
-
-// Use in your CDK stack
-new MyStack(app, 'MyStack', stackProps);
+// TypeScript knows the exact shape of checkedEnv
+console.log(checkedEnv.name); // string
+console.log(checkedEnv.region); // string
+console.log(checkedEnv.stage); // 'dev' | 'staging' | 'prod'
+console.log(checkedEnv.instanceCount); // number
 ```
 
 ### Using Array Path
@@ -50,7 +47,43 @@ new MyStack(app, 'MyStack', stackProps);
 You can also provide the path as an array of path segments:
 
 ```typescript
-const stackProps = getStackProps(['path', 'to', 'env', 'file.json'], envSchema);
+const checkedEnv = getEnv(['path', 'to', 'env', 'file.json'], envSchema);
+```
+
+### Using with `process.env`
+```typescript
+
+const checkedEnv = getEnv('path/to/env/file.json', envSchema);
+
+process.env = {
+  ...process.env,
+  ...Object.fromEntries(
+    Object.entries(checkedEnv).map(([key, value]) => [key, String(value)])
+  )
+}
+```
+
+### Using with CDK
+```typescript
+
+// Define your environment schema using Zod
+const envSchema = z.object({
+  name: z.string(),
+  region: z.string(),
+  stage: z.enum(['dev', 'staging', 'prod']),
+  instanceCount: z.number().int().positive(),
+});
+const checkedEnv = getEnv('path/to/env/file.json', envSchema);
+
+const stackProps = {
+  ...process.env,
+  ...Object.fromEntries(
+    Object.entries(checkedEnv).map(([key, value]) => [key, String(value)])
+  )
+}
+
+// Use in your CDK stack
+new MyStack(app, 'MyStack', stackProps);
 ```
 
 ### Error Handling
@@ -63,12 +96,12 @@ The library will throw an error if:
 You can enable debug logging by setting the `DEBUG` environment variable:
 
 ```bash
-DEBUG=true npm run cdk deploy
+DEBUG=true npm run start
 ```
 
 ## API Reference
 
-### `getStackProps<T>`
+### `getEnv<T>`
 
 Loads and validates environment configuration from a file.
 

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { getStackProps } from '../src';
+import { getEnv } from '../src';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -7,7 +7,7 @@ import { join } from 'path';
 jest.mock('fs');
 jest.mock('path');
 
-describe('getStackProps', () => {
+describe('getEnv', () => {
   // Store the original process.env.DEBUG
   const originalDebug = process.env.DEBUG;
 
@@ -47,7 +47,7 @@ describe('getStackProps', () => {
     });
 
     // Call the function
-    const result = getStackProps('path/to/env/file', schema);
+    const result = getEnv('path/to/env/file', schema);
 
     // Assertions
     expect(readFileSync).toHaveBeenCalledWith('path/to/env/file');
@@ -72,7 +72,7 @@ describe('getStackProps', () => {
 
     // Call the function and expect it to throw
     expect(() => {
-      getStackProps('non/existent/file', schema);
+      getEnv('non/existent/file', schema);
     }).toThrow(fileError);
 
     // Verify readFileSync was called
@@ -101,7 +101,7 @@ describe('getStackProps', () => {
 
     // Call the function and expect it to throw
     expect(() => {
-      getStackProps('path/to/env/file', schema);
+      getEnv('path/to/env/file', schema);
     }).toThrow(z.ZodError);
 
     // Verify readFileSync was called
@@ -127,7 +127,7 @@ describe('getStackProps', () => {
     });
 
     // Call the function with string path
-    getStackProps('path/to/file', schema);
+    getEnv('path/to/file', schema);
 
     // Verify join was called correctly
     expect(join).toHaveBeenCalledWith('path/to/file');
@@ -150,7 +150,7 @@ describe('getStackProps', () => {
     });
 
     // Call the function with array path
-    getStackProps(['path', 'to', 'file'], schema);
+    getEnv(['path', 'to', 'file'], schema);
 
     // Verify join was called correctly with spread array
     expect(join).toHaveBeenCalledWith('path', 'to', 'file');
@@ -174,7 +174,7 @@ describe('getStackProps', () => {
 
     // Call the function and expect it to throw
     expect(() => {
-      getStackProps('path/to/file', schema);
+      getEnv('path/to/file', schema);
     }).toThrow(fileError);
 
     // Verify console.error was called
@@ -201,7 +201,7 @@ describe('getStackProps', () => {
 
     // Call the function and expect it to throw
     expect(() => {
-      getStackProps('path/to/file', schema);
+      getEnv('path/to/file', schema);
     }).toThrow(fileError);
 
     // Verify console.error was not called
@@ -236,7 +236,7 @@ describe('getStackProps', () => {
     });
 
     // Call the function
-    const result = getStackProps('path/to/env/file', schema);
+    const result = getEnv('path/to/env/file', schema);
 
     // Assertions
     expect(readFileSync).toHaveBeenCalledWith('path/to/env/file');
@@ -244,5 +244,58 @@ describe('getStackProps', () => {
     expect(result).toEqual(testData);
     expect(result.config.timeout).toBe(300);
     expect(result.config.retries).toBe(3);
+  });
+
+  // Test combining checked values with process.env
+  it('should allow combining checked values with process.env and accessing them', () => {
+    // Store original process.env
+    const originalEnv = { ...process.env };
+
+    // Define test data
+    const testData = {
+      name: 'test-stack',
+      region: 'us-west-2',
+      stage: 'dev',
+      instanceCount: 3
+    };
+    const mockBuffer = {
+      toJSON: jest.fn().mockReturnValue(testData),
+    };
+
+    // Mock readFileSync to return our test data
+    (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+    (join as jest.Mock).mockImplementation((...args) => args.join('/'));
+
+    // Define schema
+    const schema = z.object({
+      name: z.string(),
+      region: z.string(),
+      stage: z.enum(['dev', 'staging', 'prod']),
+      instanceCount: z.number().int().positive(),
+    });
+
+    // Load and validate environment configuration
+    const checkedEnv = getEnv('path/to/env/file.json', schema);
+
+    // Combine with process.env
+    process.env = {
+      ...process.env,
+      ...Object.fromEntries(
+        Object.entries(checkedEnv).map(([key, value]) => [key, String(value)])
+      )
+    };
+
+    // Verify that the values are accessible on process.env
+    expect(process.env.name).toBe('test-stack');
+    expect(process.env.region).toBe('us-west-2');
+    expect(process.env.stage).toBe('dev');
+    expect(process.env.instanceCount).toBe('3'); // process.env values are strings
+
+    // Verify that the original process.env values are preserved
+    expect(process.env.NODE_ENV).toBe(originalEnv.NODE_ENV);
+    expect(process.env.PATH).toBe(originalEnv.PATH);
+
+    // Restore original process.env
+    process.env = originalEnv;
   });
 });
