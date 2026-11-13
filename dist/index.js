@@ -8,9 +8,9 @@ const getEnv = (pathOfEnvFile, envSchema) => {
     try {
         const envFile = (0, fs_1.readFileSync)(Array.isArray(pathOfEnvFile)
             ? (0, path_1.join)(...pathOfEnvFile)
-            : (0, path_1.join)(pathOfEnvFile));
+            : (0, path_1.join)(pathOfEnvFile), 'utf8');
         // Parse the file into the envSchema
-        const env = envSchema.parse(envFile.toJSON());
+        const env = envSchema.parse(JSON.parse(envFile));
         // Return the env object
         return {
             ...env,
