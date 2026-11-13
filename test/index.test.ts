@@ -32,12 +32,8 @@ describe('getEnv', () => {
   it('should return parsed data when file exists and matches schema', () => {
     // Define test data
     const testData = { name: 'test-stack', region: 'us-west-2' };
-    const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(testData),
-    };
-
-    // Mock readFileSync to return our test data
-    (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+    // Mock readFileSync to return our test data as file text
+    (readFileSync as jest.Mock).mockReturnValue(JSON.stringify(testData));
     (join as jest.Mock).mockImplementation((...args) => args.join('/'));
 
     // Define schema
@@ -50,8 +46,7 @@ describe('getEnv', () => {
     const result = getEnv('path/to/env/file', schema);
 
     // Assertions
-    expect(readFileSync).toHaveBeenCalledWith('path/to/env/file');
-    expect(mockBuffer.toJSON).toHaveBeenCalled();
+    expect(readFileSync).toHaveBeenCalledWith('path/to/env/file', 'utf8');
     expect(result).toEqual(testData);
   });
 
@@ -76,7 +71,7 @@ describe('getEnv', () => {
     }).toThrow(fileError);
 
     // Verify readFileSync was called
-    expect(readFileSync).toHaveBeenCalledWith('non/existent/file');
+    expect(readFileSync).toHaveBeenCalledWith('non/existent/file', 'utf8');
     // Verify console.error was not called (DEBUG is false)
     expect(console.error).not.toHaveBeenCalled();
   });
@@ -85,12 +80,8 @@ describe('getEnv', () => {
   it('should throw an error when file content does not match schema', () => {
     // Define invalid test data (missing required field)
     const invalidData = { name: 'test-stack' }; // missing 'region'
-    const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(invalidData),
-    };
-
-    // Mock readFileSync to return our invalid data
-    (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+    // Mock readFileSync to return our invalid data as file text
+    (readFileSync as jest.Mock).mockReturnValue(JSON.stringify(invalidData));
     (join as jest.Mock).mockImplementation((...args) => args.join('/'));
 
     // Define schema with required fields
@@ -105,20 +96,15 @@ describe('getEnv', () => {
     }).toThrow(z.ZodError);
 
     // Verify readFileSync was called
-    expect(readFileSync).toHaveBeenCalledWith('path/to/env/file');
-    expect(mockBuffer.toJSON).toHaveBeenCalled();
+    expect(readFileSync).toHaveBeenCalledWith('path/to/env/file', 'utf8');
   });
 
   // 4. Test handling of string path vs array path
   it('should handle string path correctly', () => {
     // Define test data
     const testData = { name: 'test-stack' };
-    const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(testData),
-    };
-
     // Mock readFileSync and join
-    (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+    (readFileSync as jest.Mock).mockReturnValue(JSON.stringify(testData));
     (join as jest.Mock).mockImplementation((...args) => args.join('/'));
 
     // Define schema
@@ -136,12 +122,8 @@ describe('getEnv', () => {
   it('should handle array path correctly', () => {
     // Define test data
     const testData = { name: 'test-stack' };
-    const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(testData),
-    };
-
     // Mock readFileSync and join
-    (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+    (readFileSync as jest.Mock).mockReturnValue(JSON.stringify(testData));
     (join as jest.Mock).mockImplementation((...args) => args.join('/'));
 
     // Define schema
@@ -208,6 +190,18 @@ describe('getEnv', () => {
     expect(console.error).not.toHaveBeenCalled();
   });
 
+  // Error case - the file is not valid JSON
+  it('should throw when the file is not valid JSON', () => {
+    (readFileSync as jest.Mock).mockReturnValue('{ not json');
+    (join as jest.Mock).mockImplementation((...args) => args.join('/'));
+
+    const schema = z.object({ name: z.string() });
+
+    expect(() => {
+      getEnv('path/to/env/file', schema);
+    }).toThrow(SyntaxError);
+  });
+
   // Test handling of nested object in schema
   it('should correctly parse nested objects in the schema', () => {
     // Define test data with nested object
@@ -218,12 +212,8 @@ describe('getEnv', () => {
         retries: 3,
       },
     };
-    const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(testData),
-    };
-
-    // Mock readFileSync to return our test data
-    (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+    // Mock readFileSync to return our test data as file text
+    (readFileSync as jest.Mock).mockReturnValue(JSON.stringify(testData));
     (join as jest.Mock).mockImplementation((...args) => args.join('/'));
 
     // Define schema with nested object
@@ -239,8 +229,7 @@ describe('getEnv', () => {
     const result = getEnv('path/to/env/file', schema);
 
     // Assertions
-    expect(readFileSync).toHaveBeenCalledWith('path/to/env/file');
-    expect(mockBuffer.toJSON).toHaveBeenCalled();
+    expect(readFileSync).toHaveBeenCalledWith('path/to/env/file', 'utf8');
     expect(result).toEqual(testData);
     expect(result.config.timeout).toBe(300);
     expect(result.config.retries).toBe(3);
@@ -258,12 +247,8 @@ describe('getEnv', () => {
       stage: 'dev',
       instanceCount: 3,
     };
-    const mockBuffer = {
-      toJSON: jest.fn().mockReturnValue(testData),
-    };
-
-    // Mock readFileSync to return our test data
-    (readFileSync as jest.Mock).mockReturnValue(mockBuffer);
+    // Mock readFileSync to return our test data as file text
+    (readFileSync as jest.Mock).mockReturnValue(JSON.stringify(testData));
     (join as jest.Mock).mockImplementation((...args) => args.join('/'));
 
     // Define schema

@@ -12,9 +12,10 @@ export const getEnv = <T extends z.ZodObject<any>>(
       Array.isArray(pathOfEnvFile)
         ? join(...pathOfEnvFile)
         : join(pathOfEnvFile),
+      'utf8',
     );
     // Parse the file into the envSchema
-    const env = envSchema.parse(envFile.toJSON());
+    const env = envSchema.parse(JSON.parse(envFile));
     // Return the env object
     return {
       ...env,
